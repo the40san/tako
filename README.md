@@ -1,8 +1,6 @@
 # Tako
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/tako`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Provides Horizontal-Sharding for ActiveRecord.
 
 ## Installation
 
@@ -21,8 +19,30 @@ Or install it yourself as:
     $ gem install tako
 
 ## Usage
+## How to use Tako?
+First, you need to create a config file, shards.yml, inside your config/ directory.
+Also you can override config file path with environment variable.
 
-TODO: Write usage instructions here
+### Syntax
+Tako adds a method to each AR Class and object: the shard method is used to select the shard like this:
+
+```ruby
+  User.shard(:slave_one).where(:name => "Thiago").limit(3)
+```
+
+Tako also supports queries within a block. When you pass a block to the shard method, all queries inside the block will be sent to the specified shard.
+
+```ruby
+Tako.shard(:slave_two) do
+  User.create(:name => "Mike")
+end
+
+# or
+
+ModelA.shard(:slave_two) do
+  User.create(:name => "Mike")
+end
+```
 
 ## Development
 
@@ -32,7 +52,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/tako. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/the40san/tako. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 ## License
