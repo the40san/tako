@@ -1,6 +1,7 @@
 # Tako
 
 Provides Horizontal-Sharding for ActiveRecord.
+Rails 5 Ready.
 
 ## Installation
 
