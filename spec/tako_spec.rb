@@ -30,4 +30,111 @@ describe Tako do
       end
     end
   end
+
+  describe ".config" do
+    subject { Tako.config }
+
+    it "returns config without :tako header" do
+      expect(subject).to eq(
+        {
+          test: {
+            shard01: {
+              adapter: "mysql2",
+              encoding: "utf8",
+              charset: "utf8",
+              collation: "utf8_unicode_ci",
+              reconnect: false,
+              username: ENV['MYSQL_USER_NAME'] || "root",
+              password: ENV['MYSQL_ROOT_PASSWORD'],
+              host:     ENV['MYSQL_HOST'] || "localhost",
+              port:     ENV['MYSQL_PORT'] || 3306,
+              database: "tako_test_shard1"
+            },
+            shard02: {
+              adapter: "mysql2",
+              encoding: "utf8",
+              charset: "utf8",
+              collation: "utf8_unicode_ci",
+              reconnect: false,
+              username: ENV['MYSQL_USER_NAME'] || "root",
+              password: ENV['MYSQL_ROOT_PASSWORD'],
+              host:     ENV['MYSQL_HOST'] || "localhost",
+              port:     ENV['MYSQL_PORT'] || 3306,
+              database: "tako_test_shard2"
+            }
+          }
+        }.with_indifferent_access
+      )
+    end
+  end
+
+  # in MultiShardExecution
+  describe ".shard_names" do
+    subject { Tako.shard_names }
+
+    it "returns all shard names" do
+      expect(subject).to eq(
+        [
+          :shard01,
+          :shard02
+        ]
+      )
+    end
+  end
+
+  describe ".with_all_shards" do
+    subject do
+      Tako.with_all_shards do
+        ModelA.create(id: 1)
+      end
+    end
+
+    it "creates a record at all shards" do
+      subject
+
+      expect(ModelA.shard(:shard01).find_by(id: 1)).to_not be_nil
+      expect(ModelA.shard(:shard02).find_by(id: 1)).to_not be_nil
+      expect(ModelA.find_by(id: 1)).to be_nil
+    end
+  end
+
+  describe "transaction in block" do
+    subject do
+      Tako.shard(:shard01) do
+        ModelA.transaction do
+          ModelA.create(id: 1)
+        end
+      end
+    end
+
+    it "creates a record at all shards" do
+      subject
+
+      expect(ModelA.shard(:shard01).find_by(id: 1)).to_not be_nil
+      expect(ModelA.shard(:shard02).find_by(id: 1)).to be_nil
+      expect(ModelA.find_by(id: 1)).to be_nil
+    end
+  end
+
+  describe "method has yield" do
+    subject do
+      Tako.shard(:shard01) do
+        ModelA.new(id: 1).yield_method do |rec|
+          rec.save
+        end
+        ModelA.create(id: 2)
+      end
+    end
+
+    it "creates a record at all shards" do
+      subject
+
+      expect(ModelA.shard(:shard01).find_by(id: 1)).to_not be_nil
+      expect(ModelA.shard(:shard01).find_by(id: 2)).to_not be_nil
+      expect(ModelA.shard(:shard02).find_by(id: 1)).to be_nil
+      expect(ModelA.shard(:shard02).find_by(id: 2)).to be_nil
+      expect(ModelA.find_by(id: 1)).to be_nil
+      expect(ModelA.find_by(id: 2)).to be_nil
+    end
+  end
 end

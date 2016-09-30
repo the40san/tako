@@ -58,4 +58,38 @@ describe 'ActiveRecord::Base.shard' do
       end
     end
   end
+
+  describe "transaction" do
+    subject do
+      ModelA.shard(:shard01).transaction do
+        ModelA.create(id: 3)
+      end
+
+      ModelA.shard(:shard02).transaction do
+        ModelA.create(id: 4)
+      end
+
+      ModelA.transaction do
+        ModelA.create(id: 5)
+      end
+    end
+
+    it "id: 3 records will be persisted at shard01, id: 4 at shard02, id: 5 at default" do
+      aggregate_failures do
+        subject
+
+        expect(ModelA.shard(:shard01).find_by(id: 3)).to_not be_nil
+        expect(ModelA.shard(:shard02).find_by(id: 3)).to be_nil
+        expect(ModelA.find_by(id: 3)).to be_nil
+
+        expect(ModelA.shard(:shard01).find_by(id: 4)).to be_nil
+        expect(ModelA.shard(:shard02).find_by(id: 4)).to_not be_nil
+        expect(ModelA.find_by(id: 4)).to be_nil
+
+        expect(ModelA.shard(:shard01).find_by(id: 5)).to be_nil
+        expect(ModelA.shard(:shard02).find_by(id: 5)).to be_nil
+        expect(ModelA.find_by(id: 5)).to_not be_nil
+      end
+    end
+  end
 end

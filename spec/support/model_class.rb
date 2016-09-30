@@ -1,4 +1,7 @@
 class ModelA < ActiveRecord::Base
+  def yield_method
+    yield self
+  end
 end
 
 class ModelB < ActiveRecord::Base
