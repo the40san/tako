@@ -7,4 +7,16 @@ RSpec.describe "Tests", type: :request do
       expect(response).to have_http_status(200)
     end
   end
+
+  describe "POST /tests" do
+    subject { post tests_path }
+
+    it "creates a record to shard1" do
+      subject
+
+      expect(Test.shard(:shard01).count).to eq(1)
+      expect(Test.shard(:shard02).count).to eq(0)
+      expect(Test.count).to eq(0)
+    end
+  end
 end
