@@ -97,4 +97,44 @@ describe Tako do
       expect(ModelA.find_by(id: 1)).to be_nil
     end
   end
+
+  describe "transaction in block" do
+    subject do
+      Tako.shard(:shard01) do
+        ModelA.transaction do
+          ModelA.create(id: 1)
+        end
+      end
+    end
+
+    it "creates a record at all shards" do
+      subject
+
+      expect(ModelA.shard(:shard01).find_by(id: 1)).to_not be_nil
+      expect(ModelA.shard(:shard02).find_by(id: 1)).to be_nil
+      expect(ModelA.find_by(id: 1)).to be_nil
+    end
+  end
+
+  describe "method has yield" do
+    subject do
+      Tako.shard(:shard01) do
+        ModelA.new(id: 1).yield_method do |rec|
+          rec.save
+        end
+        ModelA.create(id: 2)
+      end
+    end
+
+    it "creates a record at all shards" do
+      subject
+
+      expect(ModelA.shard(:shard01).find_by(id: 1)).to_not be_nil
+      expect(ModelA.shard(:shard01).find_by(id: 2)).to_not be_nil
+      expect(ModelA.shard(:shard02).find_by(id: 1)).to be_nil
+      expect(ModelA.shard(:shard02).find_by(id: 2)).to be_nil
+      expect(ModelA.find_by(id: 1)).to be_nil
+      expect(ModelA.find_by(id: 2)).to be_nil
+    end
+  end
 end
