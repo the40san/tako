@@ -67,4 +67,34 @@ describe Tako do
       )
     end
   end
+
+  # in MultiShardExecution
+  describe ".shard_names" do
+    subject { Tako.shard_names }
+
+    it "returns all shard names" do
+      expect(subject).to eq(
+        [
+          :shard01,
+          :shard02
+        ]
+      )
+    end
+  end
+
+  describe ".with_all_shards" do
+    subject do
+      Tako.with_all_shards do
+        ModelA.create(id: 1)
+      end
+    end
+
+    it "creates a record at all shards" do
+      subject
+
+      expect(ModelA.shard(:shard01).find_by(id: 1)).to_not be_nil
+      expect(ModelA.shard(:shard02).find_by(id: 1)).to_not be_nil
+      expect(ModelA.find_by(id: 1)).to be_nil
+    end
+  end
 end

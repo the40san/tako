@@ -6,8 +6,11 @@ require "tako/repository"
 require "tako/proxy_stack"
 require "tako/proxy"
 require "tako/query_chain"
+require "tako/multi_shard_execution"
 
 module Tako
+  extend MultiShardExecution
+
   class << self
     def shard(shard_name)
       if block_given?
@@ -40,3 +43,5 @@ end
 ActiveRecord::Base.class_eval do
   extend Tako::ActiveRecordExt::Base::Extend
 end
+
+require 'tako/railtie' if defined?(::Rails)
