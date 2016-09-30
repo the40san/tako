@@ -54,6 +54,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ### Run test
 
 Run `bundle exec rake` to run rspec
+
 Run `bundle exec rake` in `spec/dummy5` will run rspec with rails 5
 
 ## Contributing
