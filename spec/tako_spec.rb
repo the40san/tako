@@ -30,4 +30,41 @@ describe Tako do
       end
     end
   end
+
+  describe ".config" do
+    subject { Tako.config }
+
+    it "returns config without :tako header" do
+      expect(subject).to eq(
+        {
+          test: {
+            shard01: {
+              adapter: "mysql2",
+              encoding: "utf8",
+              charset: "utf8",
+              collation: "utf8_unicode_ci",
+              reconnect: false,
+              username: ENV['MYSQL_USER_NAME'] || "root",
+              password: ENV['MYSQL_ROOT_PASSWORD'],
+              host:     ENV['MYSQL_HOST'] || "localhost",
+              port:     ENV['MYSQL_PORT'] || 3306,
+              database: "tako_test_shard1"
+            },
+            shard02: {
+              adapter: "mysql2",
+              encoding: "utf8",
+              charset: "utf8",
+              collation: "utf8_unicode_ci",
+              reconnect: false,
+              username: ENV['MYSQL_USER_NAME'] || "root",
+              password: ENV['MYSQL_ROOT_PASSWORD'],
+              host:     ENV['MYSQL_HOST'] || "localhost",
+              port:     ENV['MYSQL_PORT'] || 3306,
+              database: "tako_test_shard2"
+            }
+          }
+        }.with_indifferent_access
+      )
+    end
+  end
 end
