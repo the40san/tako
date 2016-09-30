@@ -1,0 +1,19 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8
+  charset: utf8
+  collation: utf8_unicode_ci
+  reconnect: false
+  username: <%= ENV['MYSQL_USER_NAME'] || "root" %>
+  password: <%= ENV['MYSQL_ROOT_PASSWORD'] %>
+  host: <%= ENV['MYSQL_HOST'] || "localhost" %>
+  port: <%= ENV['MYSQL_PORT'] || 3306 %>
+
+tako:
+  test:
+    shard01:
+      <<: *default
+      database: tako_test_shard1
+    shard02:
+      <<: *default
+      database: tako_test_shard2
