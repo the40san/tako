@@ -65,7 +65,7 @@ Run `bundle exec rake` to run rspec
 
 Run `bundle exec rake` in `spec/dummy5` will run rspec with rails 5
 
-Run `bundle exec rake` in `spec/dummy42` will run rspec with rails 5
+Run `bundle exec rake` in `spec/dummy42` will run rspec with rails 4.2
 
 
 ## Contributing
