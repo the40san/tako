@@ -1,0 +1,18 @@
+machine:
+  ruby:
+    version: 2.3.1
+  environment:
+    RAILS_ENV: test
+
+database:
+  override:
+    - cd spec/dummy5/ && bundle install
+    - cd spec/dummy5/ && bundle exec rake --trace db:create
+    - cd spec/dummy5/ && bundle exec rake --trace db:tako:create
+    - cd spec/dummy5/ && bundle exec rake --trace db:migrate
+    - cd spec/dummy5/ && bundle exec rake --trace db:tako:migrate
+
+test:
+  override:
+    - CI=true bundle exec rake; test $? != 1
+    - cd spec/dummy5 && CI=true bundle exec rspec spec; test $? != 1
