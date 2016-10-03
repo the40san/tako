@@ -1,3 +1,9 @@
+PATH
+  remote: ../../
+  specs:
+    tako (0.2.0)
+      activerecord (> 4.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -156,6 +162,7 @@ DEPENDENCIES
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring
+  tako!
   turbolinks
   uglifier (>= 1.3.0)
   web-console (~> 2.0)
