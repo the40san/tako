@@ -21,6 +21,12 @@ Or install it yourself as:
 
     $ gem install tako
 
+
+## Database migration (Rails)
+
+    $ bundle exec rake db:tako:create
+    $ bundle exec rake db:tako:migrate
+
 ## Usage
 ## How to use Tako?
 First, you need to create a config file, shards.yml, inside your config/ directory.
