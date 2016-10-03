@@ -1,7 +1,8 @@
 # Tako
 [![CircleCI](https://circleci.com/gh/the40san/tako/tree/master.svg?style=svg)](https://circleci.com/gh/the40san/tako/tree/master)
 
-Provides Horizontal-Sharding for ActiveRecord.
+Provides features for Database Sharding in ActiveRecord.
+The main goal of tako is implementing sharding features with less ActiveRecord-dependent, catching up Rails version up.
 Rails 5 Ready.
 
 ## Installation
