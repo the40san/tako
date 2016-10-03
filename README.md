@@ -1,4 +1,5 @@
 # Tako
+[![CircleCI](https://circleci.com/gh/the40san/tako/tree/master.svg?style=svg)](https://circleci.com/gh/the40san/tako/tree/master)
 
 Provides Horizontal-Sharding for ActiveRecord.
 Rails 5 Ready.
