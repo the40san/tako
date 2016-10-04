@@ -7,7 +7,9 @@ namespace :db do
     end
 
     task :check_protected_environments => [:environment, :load_config] do
-      ActiveRecord::Tasks::DatabaseTasks.check_protected_environments!
+      if ActiveRecord::Tasks::DatabaseTasks.respond_to?(:check_protected_environments!)
+        ActiveRecord::Tasks::DatabaseTasks.check_protected_environments!
+      end
     end
 
     task :create do
