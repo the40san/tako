@@ -26,18 +26,26 @@ namespace :db do
       end
 
       Tako.with_all_shards do
+        ActiveRecord::SchemaMigration.create_table
+
         version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
         revert = !!ENV["DOWN_MIGRATION"]
 
         migrations = if version
-          [
-            ActiveRecord::Migrator.migrations(paths).find {|proxy| proxy.version == version }.name.constantize
-          ]
+          ActiveRecord::Migrator.migrations(paths).select {|proxy| proxy.version == version }
         else
-          ActiveRecord::Migrator.migrations(paths).map(&:name).map(&:constantize)
+          ActiveRecord::Migrator.migrations(paths)
         end
-
-        ActiveRecord::Migration.run(*migrations, revert: revert)
+        all_schema_migration_versions = ActiveRecord::SchemaMigration.pluck(:version)
+        migrations = migrations.reject {|proxy| all_schema_migration_versions.include?(proxy.version.to_s) }
+        migrations.each do |proxy|
+          ActiveRecord::Migration.run(proxy.name.constantize, revert: revert)
+          if revert
+            ActiveRecord::SchemaMigration.where(:version => proxy.version.to_s).delete_all
+          else
+            ActiveRecord::SchemaMigration.create!(:version => proxy.version.to_s)
+          end
+        end
       end
     end
 
