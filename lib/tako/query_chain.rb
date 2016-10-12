@@ -10,13 +10,21 @@ module Tako
 
     def method_missing(method, *args)
       @proxy.in_proxy do
-        if block_given?
-          base_object.send(method, *args) do
-            yield
-          end
-        else
-          base_object.send(method, *args)
+
+        result = if block_given?
+                    base_object.send(method, *args) do
+                      yield
+                    end
+                  else
+                    base_object.send(method, *args)
+                  end
+
+        if chain_available?(result)
+          @base_object = result
+          return self
         end
+
+        result
       end
     end
 
@@ -25,6 +33,15 @@ module Tako
         Tako::Repository.shard(shard_name),
         self
       )
+    end
+
+    private
+
+    def chain_available?(obj)
+      [
+        ::ActiveRecord::Relation,
+        ::ActiveRecord::QueryMethods::WhereChain
+      ].any? { |anc| obj.is_a?(anc) }
     end
   end
 end

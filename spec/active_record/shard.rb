@@ -92,4 +92,54 @@ describe 'ActiveRecord::Base.shard' do
       end
     end
   end
+
+  describe "where chain" do
+    subject do
+      ModelA.shard(:shard01).create(value1: 1, value2: "Hoge1")
+      ModelA.shard(:shard01).create(value1: 1, value2: "Huga1")
+      ModelA.shard(:shard01).create(value1: 2, value2: "Hoge2")
+      ModelA.shard(:shard01).create(value1: 2, value2: "Huga2")
+
+      ModelA.shard(:shard02).create(id: 1000, value1: 1, value2: "Hoge1")
+      ModelA.shard(:shard02).create(id: 1001, value1: 1, value2: "Hoge1")
+      ModelA.shard(:shard02).create(id: 1002, value1: 1, value2: "Hoge1")
+      ModelA.shard(:shard02).create(id: 1003, value1: 1, value2: "Huga1")
+      ModelA.shard(:shard02).create(id: 1004, value1: 2, value2: "Huga2")
+      ModelA.shard(:shard02).create(id: 1005, value1: 2, value2: "Huga2")
+    end
+
+    it "where chain works" do
+      aggregate_failures do
+        subject
+
+        expect(ModelA.shard(:shard01).where(value2: "Hoge1").where(value1: 1).first).to_not be_nil
+        expect(ModelA.shard(:shard01).where(value2: "Hoge2").where(value1: 2).first).to_not be_nil
+        expect(ModelA.shard(:shard01).where(value2: "Huga1").where(value1: 1).first).to_not be_nil
+        expect(ModelA.shard(:shard01).where(value2: "Huga2").where(value1: 2).first).to_not be_nil
+        expect(ModelA.shard(:shard01).where(value2: "Huga2").where(value1: 1).first).to be_nil
+
+        # nest
+        expect(Tako.shard(:shard01) { ModelA.shard(:shard02).where(value1: 1).limit(5).count }).to eq(4)
+
+        # limit and offset
+        expect(ModelA.shard(:shard02).where(value1: 1).limit(3).count).to eq(3)
+        expect(ModelA.shard(:shard02).where(value1: 1).offset(2).count).to eq(2)
+
+        # pluck
+        expect(ModelA.shard(:shard02).where.not(value2: "Huga2").pluck(:value1)).to eq([1, 1, 1, 1])
+
+        # first
+        expect(ModelA.shard(:shard02).where(value1: 2).order(:id).first.id).to eq(1004)
+        expect(ModelA.shard(:shard02).where(value1: 2).order(:id).last.id).to eq(1005)
+
+        # find
+        expect(ModelA.shard(:shard02).where(value1: 1).find(1000)).to_not be_nil
+        expect(ModelA.shard(:shard02).where(value1: 1).find_by(value2: "Huga1")).to_not be_nil
+
+        # calclate methods
+        expect(ModelA.shard(:shard01).average(:value1)).to eq(1.5)
+        expect(ModelA.shard(:shard02).average(:value1)).to eq(1.3333)
+      end
+    end
+  end
 end
