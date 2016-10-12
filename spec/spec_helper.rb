@@ -10,13 +10,15 @@ Dir[File.join(File.dirname(__FILE__), '../', "spec/active_record/**/*.rb")].each
 
 RSpec.configure do |config|
   config.before(:suite) do
-
     migration_classes = [
       CreateModelA,
       CreateModelB,
       CreateUser,
       CreateWallet,
-      CreateLog
+      CreateLog,
+      CreateBlog,
+      CreateArticle,
+      CreateAuthor
     ]
 
     Tako.config[:test].values.each do |conf|
@@ -48,7 +50,10 @@ RSpec.configure do |config|
       ModelB,
       User,
       Wallet,
-      Log
+      Log,
+      Blog,
+      Article,
+      Author
     ].each do |klass|
       klass.delete_all
       klass.shard(:shard01).delete_all
@@ -62,7 +67,10 @@ RSpec.configure do |config|
       ModelB,
       User,
       Wallet,
-      Log
+      Log,
+      Blog,
+      Article,
+      Author
     ].each do |klass|
       klass.delete_all
       klass.shard(:shard01).delete_all

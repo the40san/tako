@@ -185,4 +185,38 @@ describe 'ActiveRecord::Base.shard' do
       end
     end
   end
+
+  describe "assosiations" do
+    subject do
+      Tako.shard(:shard01) do
+        blog = Blog.create(id: 1)
+        blog.author || blog.build_author.save!
+        blog.articles << Article.new(id: 1)
+        blog.articles << Article.new(id: 2)
+        blog.articles << Article.new(id: 3)
+      end
+
+      blog = Blog.shard(:shard02).create(id: 2)
+      blog.create_author
+      blog.articles << Article.new(id: 4)
+      blog.articles << Article.new(id: 5)
+      blog.articles << Article.new(id: 6)
+    end
+
+    it "where chain works" do
+      aggregate_failures do
+        subject
+
+        blog_shard1 = Blog.shard(:shard01).first
+        expect(blog_shard1.author).to be_present
+        expect(blog_shard1.author.blog_id).to eq(1)
+        expect(blog_shard1.articles.pluck(:id)).to eq([1, 2, 3])
+
+        blog_shard2 = Blog.shard(:shard02).first
+        expect(blog_shard2.author).to be_present
+        expect(blog_shard2.author.blog_id).to eq(2)
+        expect(blog_shard2.articles.pluck(:id)).to eq([4, 5, 6])
+      end
+    end
+  end
 end

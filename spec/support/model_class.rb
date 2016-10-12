@@ -30,6 +30,19 @@ class Log < ActiveRecord::Base
   end
 end
 
+class Blog < ActiveRecord::Base
+  has_many :articles
+  has_one :author
+end
+
+class Article < ActiveRecord::Base
+  belongs_to :blog
+end
+
+class Author < ActiveRecord::Base
+  belongs_to :blog
+end
+
 class CreateModelA < ActiveRecord::Migration
   def change
     create_table :model_as do |t|
@@ -60,6 +73,14 @@ class CreateUser < ActiveRecord::Migration
   end
 end
 
+class CreateBlog < ActiveRecord::Migration
+  def change
+    create_table :blogs do |t|
+      t.timestamps null: false
+    end
+  end
+end
+
 class CreateWallet < ActiveRecord::Migration
   def change
     create_table :wallets do |t|
@@ -69,10 +90,28 @@ class CreateWallet < ActiveRecord::Migration
   end
 end
 
+class CreateArticle < ActiveRecord::Migration
+  def change
+    create_table :articles do |t|
+      t.belongs_to :blog
+      t.timestamps null: false
+    end
+  end
+end
+
 class CreateLog < ActiveRecord::Migration
   def change
     create_table :logs do |t|
       t.belongs_to :user
+      t.timestamps null: false
+    end
+  end
+end
+
+class CreateAuthor < ActiveRecord::Migration
+  def change
+    create_table :authors do |t|
+      t.belongs_to :blog
       t.timestamps null: false
     end
   end

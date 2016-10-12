@@ -46,6 +46,15 @@ end
 
 ActiveRecord::Base.class_eval do
   extend Tako::ActiveRecordExt::Base::ClassMethods
+  include Tako::ActiveRecordExt::Base::InstanceMethods
+end
+
+ActiveRecord::Associations::CollectionAssociation.class_eval do
+  prepend Tako::ActiveRecordExt::Association::Overrides
+end
+
+ActiveRecord::Associations::SingularAssociation.class_eval do
+  prepend Tako::ActiveRecordExt::Association::Overrides
 end
 
 ActiveRecord::LogSubscriber.class_eval do

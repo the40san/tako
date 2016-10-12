@@ -36,6 +36,22 @@ module Tako
           @force_shard.present?
         end
       end
+
+      module InstanceMethods
+        attr_accessor :current_shard
+
+        def self.included(mod)
+          mod.class_eval do
+            after_initialize :set_current_shard
+
+            private
+
+              def set_current_shard
+                @current_shard = ::Tako::ProxyStack.top.try(:shard_name)
+              end
+          end
+        end
+      end
     end
 
     module LogSubscriber
@@ -51,6 +67,34 @@ module Tako
           else
             super
           end
+        end
+      end
+    end
+
+    module Association
+      module Overrides
+        def reader(force_reload = false)
+          return super unless owner.current_shard
+          Tako.shard(owner.current_shard) do
+            create_query_chain(super)
+          end
+        end
+
+        def writer(records)
+          return super unless owner.current_shard
+          Tako.shard(owner.current_shard) do
+            create_query_chain(super)
+          end
+        end
+
+        private
+
+        def create_query_chain(base_object)
+          return if base_object.nil?
+          Tako::QueryChain.new(
+            Tako::Repository.shard(owner.current_shard),
+            base_object
+          )
         end
       end
     end
