@@ -41,11 +41,11 @@ end
 require 'active_record'
 
 ActiveRecord::ConnectionHandling.class_eval do
-  prepend Tako::ActiveRecordExt::ConnectionHandling::Prepend
+  prepend Tako::ActiveRecordExt::ConnectionHandling::Overrides
 end
 
 ActiveRecord::Base.class_eval do
-  extend Tako::ActiveRecordExt::Base::Extend
+  extend Tako::ActiveRecordExt::Base::ClassMethods
 end
 
 require 'tako/railtie' if defined?(::Rails)

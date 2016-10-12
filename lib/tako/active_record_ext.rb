@@ -1,7 +1,7 @@
 module Tako
   module ActiveRecordExt
     module ConnectionHandling
-      module Prepend
+      module Overrides
         def connection
           if Tako::ProxyStack.top
             Tako::ProxyStack.top.connection
@@ -13,7 +13,7 @@ module Tako
     end
 
     module Base
-      module Extend
+      module ClassMethods
         def shard(shard_name)
           if block_given?
             Tako.shard(shard_name) do
