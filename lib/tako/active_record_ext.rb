@@ -3,6 +3,7 @@ module Tako
     module ConnectionHandling
       module Overrides
         def connection
+          return Tako::Repository.shard(@force_shard).connection if force_shard?
           if Tako::ProxyStack.top
             Tako::ProxyStack.top.connection
           else
@@ -25,6 +26,14 @@ module Tako
               self
             )
           end
+        end
+
+        def force_shard(shard_name)
+          @force_shard = shard_name
+        end
+
+        def force_shard?
+          @force_shard.present?
         end
       end
     end

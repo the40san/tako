@@ -142,4 +142,47 @@ describe 'ActiveRecord::Base.shard' do
       end
     end
   end
+
+  describe "force_shard" do
+    subject do
+      User.shard(:shard01).create(id: 1)
+      User.shard(:shard02).create(id: 2)
+
+      Wallet.shard(:shard01).create(user_id: 1)
+      Wallet.shard(:shard02).create(user_id: 2)
+
+      Log.shard(:shard01).create(user_id: 1)
+      log = Log.shard(:shard02).create(user_id: 2)
+
+      Log.sharded_class_method(3)
+      log.sharded_method(4)
+      # turn off for force sharding
+      allow(ActiveRecord::Base).to receive(:force_shard?).and_return(false)
+    end
+
+    it "creates record with force shard" do
+      aggregate_failures do
+        subject
+
+        expect(User.shard(:shard01).find_by(id: 1)).to be_present
+        expect(User.shard(:shard01).find_by(id: 2)).to be_blank
+        expect(User.shard(:shard02).find_by(id: 1)).to be_blank
+        expect(User.shard(:shard02).find_by(id: 2)).to be_present
+
+        expect(Wallet.shard(:shard01).find_by(user_id: 1)).to be_present
+        expect(Wallet.shard(:shard01).find_by(user_id: 2)).to be_present
+        expect(Wallet.shard(:shard02).find_by(user_id: 1)).to be_blank
+        expect(Wallet.shard(:shard02).find_by(user_id: 2)).to be_blank
+
+        expect(Log.shard(:shard01).find_by(user_id: 1)).to be_blank
+        expect(Log.shard(:shard01).find_by(user_id: 2)).to be_blank
+        expect(Log.shard(:shard01).find_by(user_id: 3)).to be_blank
+        expect(Log.shard(:shard01).find_by(user_id: 4)).to be_blank
+        expect(Log.shard(:shard02).find_by(user_id: 1)).to be_present
+        expect(Log.shard(:shard02).find_by(user_id: 2)).to be_present
+        expect(Log.shard(:shard02).find_by(user_id: 3)).to be_present
+        expect(Log.shard(:shard02).find_by(user_id: 4)).to be_present
+      end
+    end
+  end
 end

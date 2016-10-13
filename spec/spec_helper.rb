@@ -10,6 +10,15 @@ Dir[File.join(File.dirname(__FILE__), '../', "spec/active_record/**/*.rb")].each
 
 RSpec.configure do |config|
   config.before(:suite) do
+
+    migration_classes = [
+      CreateModelA,
+      CreateModelB,
+      CreateUser,
+      CreateWallet,
+      CreateLog
+    ]
+
     Tako.config[:test].values.each do |conf|
       ActiveRecord::Tasks::DatabaseTasks.drop(conf)
       ActiveRecord::Tasks::DatabaseTasks.create(conf)
@@ -18,17 +27,11 @@ RSpec.configure do |config|
     Tako.load_connections_from_yaml
 
     Tako.shard(:shard01) do
-      ActiveRecord::Migration.run(
-        CreateModelA,
-        CreateModelB
-      )
+      ActiveRecord::Migration.run(*migration_classes)
     end
 
     Tako.shard(:shard02) do
-      ActiveRecord::Migration.run(
-        CreateModelA,
-        CreateModelB
-      )
+      ActiveRecord::Migration.run(*migration_classes)
     end
 
     database_yml_path = File.join(File.dirname(__FILE__), "config/database.yml")
@@ -36,27 +39,34 @@ RSpec.configure do |config|
     ActiveRecord::Tasks::DatabaseTasks.drop(database_yml)
     ActiveRecord::Tasks::DatabaseTasks.create(database_yml)
     ActiveRecord::Base.establish_connection(database_yml)
-    ActiveRecord::Migration.run(
-      CreateModelA,
-      CreateModelB
-    )
+    ActiveRecord::Migration.run(*migration_classes)
   end
 
   config.before(:each) do
-    ModelA.delete_all
-    ModelB.delete_all
-    ModelA.shard(:shard01).delete_all
-    ModelB.shard(:shard01).delete_all
-    ModelA.shard(:shard02).delete_all
-    ModelB.shard(:shard02).delete_all
+    [
+      ModelA,
+      ModelB,
+      User,
+      Wallet,
+      Log
+    ].each do |klass|
+      klass.delete_all
+      klass.shard(:shard01).delete_all
+      klass.shard(:shard02).delete_all
+    end
   end
 
   config.after(:each) do
-    ModelA.delete_all
-    ModelB.delete_all
-    ModelA.shard(:shard01).delete_all
-    ModelB.shard(:shard01).delete_all
-    ModelA.shard(:shard02).delete_all
-    ModelB.shard(:shard02).delete_all
+    [
+      ModelA,
+      ModelB,
+      User,
+      Wallet,
+      Log
+    ].each do |klass|
+      klass.delete_all
+      klass.shard(:shard01).delete_all
+      klass.shard(:shard02).delete_all
+    end
   end
 end
