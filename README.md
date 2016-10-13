@@ -53,6 +53,16 @@ ModelA.shard(:slave_two) do
 end
 ```
 
+## Vertical Sharding
+
+Add `force_shard` definition to your Vertical-Sharding model
+
+```ruby
+class YourModel < ActiveRecord::Base
+  force_shard :shard01
+end
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
