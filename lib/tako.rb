@@ -48,4 +48,8 @@ ActiveRecord::Base.class_eval do
   extend Tako::ActiveRecordExt::Base::ClassMethods
 end
 
+ActiveRecord::LogSubscriber.class_eval do
+  prepend Tako::ActiveRecordExt::LogSubscriber::Overrides
+end
+
 require 'tako/railtie' if defined?(::Rails)
