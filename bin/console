@@ -10,7 +10,7 @@ require "tako"
 # require "pry"
 # Pry.start
 
-require "irb"
+require "pry"
 
 require File.join(File.dirname(__FILE__), "../../", "spec/support/model_class")
 
@@ -22,4 +22,5 @@ database_yml = YAML.load(ERB.new(File.read(database_yml_path)).result).with_indi
 Tako.load_connections_from_yaml
 ActiveRecord::Base.establish_connection(database_yml)
 
-IRB.start
+opts = Pry::CLI.parse_options
+Pry::CLI.start(opts)
