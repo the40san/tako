@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 require 'tako'
+require 'pry'
 
 ENV["RAILS_ENV"] ||= 'test'
 ENV['TAKO_CONFIG_FILE_PATH'] ||= "spec/config/shards.yml"
@@ -13,12 +14,19 @@ RSpec.configure do |config|
     migration_classes = [
       CreateModelA,
       CreateModelB,
+      CreateForceShardRoot,
+      CreateForceShardA,
+      CreateForceShardB,
       CreateUser,
       CreateWallet,
       CreateLog,
       CreateBlog,
       CreateArticle,
-      CreateAuthor
+      CreateAuthor,
+      CreateCharacter,
+      CreateSkill,
+      CreateCharacterSkill,
+      CreateSaveAliased
     ]
 
     Tako.config[:test].values.each do |conf|
@@ -48,12 +56,19 @@ RSpec.configure do |config|
     [
       ModelA,
       ModelB,
+      ForceShardRoot,
+      ForceShardA,
+      ForceShardB,
       User,
       Wallet,
       Log,
       Blog,
       Article,
-      Author
+      Author,
+      Character,
+      Skill,
+      CharacterSkill,
+      SaveAlias
     ].each do |klass|
       klass.delete_all
       klass.shard(:shard01).delete_all
@@ -65,12 +80,19 @@ RSpec.configure do |config|
     [
       ModelA,
       ModelB,
+      ForceShardRoot,
+      ForceShardA,
+      ForceShardB,
       User,
       Wallet,
       Log,
       Blog,
       Article,
-      Author
+      Author,
+      Character,
+      Skill,
+      CharacterSkill,
+      SaveAlias
     ].each do |klass|
       klass.delete_all
       klass.shard(:shard01).delete_all
