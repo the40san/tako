@@ -8,7 +8,7 @@ module Tako
       @connection = connection
     end
 
-    def in_proxy
+    def with_shard
       Tako::ProxyStack.with_shard(self) do
         yield
       end

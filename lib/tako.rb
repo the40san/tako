@@ -14,7 +14,7 @@ module Tako
   class << self
     def shard(shard_name)
       if block_given?
-        Tako::Repository.shard(shard_name).in_proxy do
+        Tako::Repository.shard(shard_name).with_shard do
           yield
         end
       else
