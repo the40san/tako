@@ -9,8 +9,7 @@ module Tako
     end
 
     def method_missing(method, *args)
-      @proxy.in_proxy do
-
+      @proxy.with_shard do
         result = if block_given?
                     base_object.send(method, *args) do
                       yield
@@ -30,7 +29,7 @@ module Tako
 
     def shard(shard_name)
       new(
-        Tako::Repository.shard(shard_name),
+        Tako::Repository.create_proxy(shard_name),
         self
       )
     end
