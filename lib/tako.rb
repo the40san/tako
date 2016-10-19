@@ -39,39 +39,14 @@ module Tako
 end
 
 require 'active_record'
-
-ActiveRecord::ConnectionHandling.class_eval do
-  prepend Tako::ActiveRecordExt::ConnectionHandling::Overrides
-end
-
-ActiveRecord::Base.class_eval do
-  extend Tako::ActiveRecordExt::Base::ClassMethods
-  include Tako::ActiveRecordExt::Base::InstanceMethods
-  include Tako::ActiveRecordExt::Base::Overrides
-end
-
-ActiveRecord::Associations::Association.class_eval do
-  include Tako::ActiveRecordExt::Association::Overrides
-end
-
-ActiveRecord::Associations::CollectionAssociation.class_eval do
-  include Tako::ActiveRecordExt::CollectionAssociation::Overrides
-end
-
-ActiveRecord::Associations::SingularAssociation.class_eval do
-  include Tako::ActiveRecordExt::SingularAssociation::Overrides
-end
-
-ActiveRecord::Associations::CollectionProxy.class_eval do
-  include Tako::ActiveRecordExt::CollectionProxy::Overrides
-end
-
-ActiveRecord::AssociationRelation.class_eval do
-  include Tako::ActiveRecordExt::AssociationRelation::Overrides
-end
-
-ActiveRecord::LogSubscriber.class_eval do
-  prepend Tako::ActiveRecordExt::LogSubscriber::Overrides
-end
+require 'tako/active_record_ext/sharded_methods'
+require 'tako/active_record_ext/connection_handling'
+require 'tako/active_record_ext/base'
+require 'tako/active_record_ext/association'
+require 'tako/active_record_ext/collection_association'
+require 'tako/active_record_ext/singular_association'
+require 'tako/active_record_ext/collection_proxy'
+require 'tako/active_record_ext/association_relation'
+require 'tako/active_record_ext/log_subscriber'
 
 require 'tako/railtie' if defined?(::Rails)
