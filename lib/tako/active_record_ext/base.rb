@@ -9,7 +9,7 @@ module Tako
             end
           else
             Tako::QueryChain.new(
-              Tako::Repository.shard(shard_name),
+              Tako::Repository.create_proxy(shard_name),
               self
             )
           end
