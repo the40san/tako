@@ -7,6 +7,29 @@ end
 class ModelB < ActiveRecord::Base
 end
 
+class ForceShardRoot < ActiveRecord::Base
+  has_many :force_shard_a
+  has_one :force_shard_b
+end
+
+class ForceShardA < ActiveRecord::Base
+  force_shard :shard01
+  belongs_to :force_shard_root
+end
+
+class ForceShardB < ActiveRecord::Base
+  force_shard :shard02
+  belongs_to :force_shard_root
+
+  def self.sharded_class_method(rid)
+    ForceShardB.create(force_shard_root_id: rid)
+  end
+
+  def sharded_method(rid)
+    ForceShardB.create(force_shard_root_id: rid)
+  end
+end
+
 class User < ActiveRecord::Base
   has_many :logs
   has_one :wallet
@@ -14,20 +37,42 @@ end
 
 class Wallet < ActiveRecord::Base
   belongs_to :user
-  force_shard :shard01
 end
 
 class Log < ActiveRecord::Base
   belongs_to :user
-  force_shard :shard02
+  scope :number_gteq, ->(val) { where("number >= ?", val) }
+end
 
-  def self.sharded_class_method(user_id)
-    Log.create(user_id: user_id)
-  end
+class Blog < ActiveRecord::Base
+  has_many :articles
+  has_one :author
+end
 
-  def sharded_method(user_id)
-    Log.create(user_id: user_id)
-  end
+class Article < ActiveRecord::Base
+  belongs_to :blog
+end
+
+class Author < ActiveRecord::Base
+  belongs_to :blog
+end
+
+class Character < ActiveRecord::Base
+  has_many :skills, through: :character_skills
+  has_many :character_skills
+end
+
+class Skill < ActiveRecord::Base
+  has_many :characters, through: :character_skills
+  has_many :character_skills
+end
+
+class CharacterSkill < ActiveRecord::Base
+  belongs_to :character
+  belongs_to :skill
+end
+
+class SaveAlias < ActiveRecord::Base
 end
 
 class CreateModelA < ActiveRecord::Migration
@@ -52,9 +97,43 @@ class CreateModelB < ActiveRecord::Migration
   end
 end
 
+class CreateForceShardRoot < ActiveRecord::Migration
+  def change
+    create_table :force_shard_roots do |t|
+      t.timestamps null: false
+    end
+  end
+end
+
+class CreateForceShardA < ActiveRecord::Migration
+  def change
+    create_table :force_shard_as do |t|
+      t.belongs_to :force_shard_root
+      t.timestamps null: false
+    end
+  end
+end
+
+class CreateForceShardB < ActiveRecord::Migration
+  def change
+    create_table :force_shard_bs do |t|
+      t.belongs_to :force_shard_root
+      t.timestamps null: false
+    end
+  end
+end
+
 class CreateUser < ActiveRecord::Migration
   def change
     create_table :users do |t|
+      t.timestamps null: false
+    end
+  end
+end
+
+class CreateBlog < ActiveRecord::Migration
+  def change
+    create_table :blogs do |t|
       t.timestamps null: false
     end
   end
@@ -69,10 +148,64 @@ class CreateWallet < ActiveRecord::Migration
   end
 end
 
+class CreateArticle < ActiveRecord::Migration
+  def change
+    create_table :articles do |t|
+      t.belongs_to :blog
+      t.timestamps null: false
+    end
+  end
+end
+
 class CreateLog < ActiveRecord::Migration
   def change
     create_table :logs do |t|
       t.belongs_to :user
+      t.integer :number
+      t.timestamps null: false
+    end
+  end
+end
+
+class CreateAuthor < ActiveRecord::Migration
+  def change
+    create_table :authors do |t|
+      t.belongs_to :blog
+      t.timestamps null: false
+    end
+  end
+end
+
+class CreateCharacter < ActiveRecord::Migration
+  def change
+    create_table :characters do |t|
+      t.timestamps null: false
+    end
+  end
+end
+
+class CreateSkill < ActiveRecord::Migration
+  def change
+    create_table :skills do |t|
+      t.timestamps null: false
+    end
+  end
+end
+
+class CreateCharacterSkill < ActiveRecord::Migration
+  def change
+    create_table :character_skills do |t|
+      t.belongs_to :character
+      t.belongs_to :skill
+      t.timestamps null: false
+    end
+  end
+end
+
+class CreateSaveAliased < ActiveRecord::Migration
+  def change
+    create_table :save_aliases do |t|
+      t.integer :value1
       t.timestamps null: false
     end
   end

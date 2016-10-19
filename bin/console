@@ -10,5 +10,17 @@ require "tako"
 # require "pry"
 # Pry.start
 
-require "irb"
-IRB.start
+require "pry"
+
+require File.join(File.dirname(__FILE__), "../../", "spec/support/model_class")
+
+ENV["RAILS_ENV"] ||= 'test'
+ENV['TAKO_CONFIG_FILE_PATH'] ||= File.join(File.dirname(__FILE__), "../", "spec/config/shards.yml")
+
+database_yml_path = File.join(File.dirname(__FILE__), "../", "spec/config/database.yml")
+database_yml = YAML.load(ERB.new(File.read(database_yml_path)).result).with_indifferent_access[:test]
+Tako.load_connections_from_yaml
+ActiveRecord::Base.establish_connection(database_yml)
+
+opts = Pry::CLI.parse_options
+Pry::CLI.start(opts)

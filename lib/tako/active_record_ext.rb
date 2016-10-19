@@ -36,6 +36,38 @@ module Tako
           @force_shard.present?
         end
       end
+
+      module InstanceMethods
+        attr_accessor :current_shard
+
+        def self.included(mod)
+          mod.class_eval do
+            after_initialize :set_current_shard
+
+            private
+
+              def set_current_shard
+                @current_shard = ::Tako::ProxyStack.top.try(:shard_name)
+              end
+          end
+        end
+      end
+
+      module Overrides
+        def self.included(mod)
+          mod.extend(ShardedMethods)
+          mod.sharded_methods :update_attribute,
+                              :update_attributes,
+                              :update_attributes!,
+                              :reload,
+                              :delete,
+                              :destroy,
+                              :touch,
+                              :update_column,
+                              :save,
+                              :save!
+        end
+      end
     end
 
     module LogSubscriber
@@ -51,6 +83,146 @@ module Tako
           else
             super
           end
+        end
+      end
+    end
+
+    module ShardedMethods
+      def sharded_methods(*method_names)
+        method_names.each do |method_name|
+          define_method(:"#{method_name}_with_tako") do |*params, &block|
+            if current_shard
+              ::Tako.shard(current_shard) { send(:"#{method_name}_without_tako",*params, &block) }
+            else
+              send(:"#{method_name}_without_tako",*params, &block)
+            end
+          end
+          send(:alias_method, :"#{method_name}_without_tako", method_name)
+          send(:alias_method, method_name, :"#{method_name}_with_tako")
+        end
+      end
+    end
+
+    module Association
+      module Overrides
+        def current_shard
+          owner.current_shard
+        end
+
+        def self.included(mod)
+          mod.extend(ShardedMethods)
+          mod.sharded_methods :target_scope
+        end
+      end
+    end
+
+    module CollectionAssociation
+      module Overrides
+        def self.included(mod)
+          mod.extend(ShardedMethods)
+          mod.sharded_methods :reader,
+                              :writer,
+                              :ids_reader,
+                              :ids_writer,
+                              :create,
+                              :create!,
+                              :build,
+                              :any?,
+                              :count,
+                              :empty?,
+                              :first,
+                              :include?,
+                              :last,
+                              :length,
+                              :load_target,
+                              :many?,
+                              :reload,
+                              :size,
+                              :select,
+                              :uniq
+        end
+      end
+    end
+
+    module SingularAssociation
+      module Overrides
+        def self.included(mod)
+          mod.extend(ShardedMethods)
+          mod.sharded_methods :reader,
+                              :writer,
+                              :create,
+                              :create!,
+                              :build
+        end
+      end
+    end
+
+    module CollectionProxy
+      module Overrides
+        def self.included(mod)
+          mod.extend(ShardedMethods)
+          mod.sharded_methods :any?,
+                              :build,
+                              :count,
+                              :create,
+                              :create!,
+                              :concat,
+                              :delete,
+                              :delete_all,
+                              :destroy,
+                              :destroy_all,
+                              :empty?,
+                              :find,
+                              :first,
+                              :include?,
+                              :last,
+                              :length,
+                              :many?,
+                              :pluck,
+                              :replace,
+                              :select,
+                              :size,
+                              :sum,
+                              :to_a,
+                              :uniq
+        end
+
+        def current_shard
+          @association.owner.current_shard
+        end
+      end
+    end
+
+    module AssociationRelation
+      module Overrides
+        def self.included(mod)
+          mod.extend(ShardedMethods)
+          mod.sharded_methods :any?,
+                              :build,
+                              :count,
+                              :create,
+                              :create!,
+                              :delete,
+                              :delete_all,
+                              :destroy,
+                              :destroy_all,
+                              :empty?,
+                              :find,
+                              :first,
+                              :include?,
+                              :last,
+                              :length,
+                              :many?,
+                              :pluck,
+                              :select,
+                              :size,
+                              :sum,
+                              :to_a,
+                              :uniq
+        end
+
+        def current_shard
+          @association.owner.current_shard
         end
       end
     end

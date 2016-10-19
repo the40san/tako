@@ -6,12 +6,12 @@ module Tako
       end
 
       def in_piles(proxy)
-        proxy.base ||= @current
+        previous ||= @current
         @current = proxy
 
         yield
       ensure
-        @current = @current.base
+        @current = previous
       end
     end
   end

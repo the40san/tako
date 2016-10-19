@@ -21,8 +21,8 @@ module Tako
         proxy_configs[shard_name] = conf
       end
 
-      def shard(shard_name, base = nil)
-        Proxy.new(shard_name, proxy_connections[shard_name.to_sym], base)
+      def shard(shard_name)
+        Proxy.new(shard_name, proxy_connections[shard_name.to_sym])
       end
 
       def shard_names
