@@ -5,7 +5,7 @@ module Tako
         @current
       end
 
-      def in_piles(proxy)
+      def with_shard(proxy)
         previous ||= @current
         @current = proxy
 

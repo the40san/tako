@@ -9,7 +9,7 @@ module Tako
     end
 
     def in_proxy
-      Tako::ProxyStack.in_piles(self) do
+      Tako::ProxyStack.with_shard(self) do
         yield
       end
     end
