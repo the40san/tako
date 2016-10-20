@@ -102,9 +102,9 @@ Tako.shard(:shard02) do
 end
 ```
 
-## Feature
+## TODO
 
- * Make more less depen
+ * Make more independent　of ActiveRecord implementation.
 
 ## Development
 
