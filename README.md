@@ -1,9 +1,13 @@
 # Tako
 [![CircleCI](https://circleci.com/gh/the40san/tako/tree/master.svg?style=svg)](https://circleci.com/gh/the40san/tako/tree/master)
 
-Provides features for Database Sharding in ActiveRecord.
-The main goal of tako is implementing sharding features with less ActiveRecord-dependent, catching up Rails version up.
-Rails 5 Ready.
+Tako provides Database-Sharding features for ActiveRecord.
+Respecting [Octopus](https://github.com/thiagopradi/octopus)
+
+# Motivation
+The main goal of Tako is　implementing sharding features with less ActiveRecord-dependent; catching up Rails version up.
+And also, Tako supports migration from Octopus because it is no longer maintained.
+
 
 ## Installation
 
@@ -29,7 +33,7 @@ Or install it yourself as:
 
 ## Usage
 ## How to use Tako?
-First, you need to create a config file, shards.yml, inside your config/ directory.
+First, you need to create a config file, `shards.yml`, inside your config/ directory.
 Also you can override config file path with environment variable.
 
 ### Syntax
@@ -37,20 +41,47 @@ Tako adds a method to each AR Class and object: the shard method is used to sele
 
 ```ruby
   User.shard(:slave_one).where(:name => "Thiago").limit(3)
+  # => Query will run in :slave_one
 ```
 
 Tako also supports queries within a block. When you pass a block to the shard method, all queries inside the block will be sent to the specified shard.
 
 ```ruby
+User.create(name: "Bob")
+# => Query will run in default connection in database.yml
+
 Tako.shard(:slave_two) do
-  User.create(:name => "Mike")
+  User.create(name: "Mike")
+  # => Query will run in :slave_two
 end
 
 # or
 
-ModelA.shard(:slave_two) do
-  User.create(:name => "Mike")
+User.shard(:slave_two) do
+  User.create(name: "Mike")
+  # => Query will run in :slave_two
 end
+```
+
+## Associations
+
+```
+class User < ActiveRecord::Base
+  has_many :logs
+  has_one :life
+end
+
+user = User.shard(:shard01).create(name: "Jerry")
+
+user.logs.create
+# => Query will run in :shard01 (same as user)
+
+user.logs << Log.shard(:shard02).new
+# => Query will run in :shard02 (careful)
+
+life = user.build_life
+life.save!
+# => Query will run in :shard01 (same as user)
 ```
 
 ## Vertical Sharding
@@ -61,7 +92,19 @@ Add `force_shard` definition to your Vertical-Sharding model
 class YourModel < ActiveRecord::Base
   force_shard :shard01
 end
+
+YourModel.create
+# => Query will run in :shard01
+
+Tako.shard(:shard02) do
+  YourModel.create
+  # => Query will run in :shard01
+end
 ```
+
+## TODO
+
+ * Make more independent　of ActiveRecord implementation.
 
 ## Development
 
@@ -73,14 +116,15 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 Run `bundle exec rake` to run rspec
 
-Run `bundle exec rake` in `spec/dummy5` will run rspec with rails 5
+Run `bundle exec rake` in `spec/dummy5` will run rspec with rails 5.0.0.1
 
-Run `bundle exec rake` in `spec/dummy42` will run rspec with rails 4.2
+Run `bundle exec rake` in `spec/dummy42` will run rspec with rails 4.2.7.1
 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/the40san/tako. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Contributors are welcome on GitHub at https://github.com/the40san/tako. Documentation contributors also welcome!
+This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 ## License
