@@ -9,6 +9,15 @@ module Tako
         @proxy_connections ||= {}
       end
 
+      def clear
+        proxy_connections.each do |shard_name, connection|
+          connection.disconnect!
+          remove_const("TAKO_AR_CLASS_#{shard_name.upcase}")
+        end
+        proxy_configs.clear
+        proxy_connections.clear
+      end
+
       def add(shard_name, conf)
         shard_name = shard_name.to_sym
         return if proxy_configs[shard_name]

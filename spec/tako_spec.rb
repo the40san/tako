@@ -137,4 +137,22 @@ describe Tako do
       expect(ModelA.find_by(id: 2)).to be_nil
     end
   end
+
+  describe "load_connections_from_yaml" do
+    it "clears old connections" do
+      old_object_ids = [
+        ActiveRecord::Base.shard(:shard01).connection.object_id,
+        ActiveRecord::Base.shard(:shard02).connection.object_id
+      ]
+
+      Tako.load_connections_from_yaml
+
+      new_object_ids = [
+        ActiveRecord::Base.shard(:shard01).connection.object_id,
+        ActiveRecord::Base.shard(:shard02).connection.object_id
+      ]
+
+      expect(new_object_ids).to_not eq(old_object_ids)
+    end
+  end
 end
