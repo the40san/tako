@@ -23,6 +23,7 @@ module Tako
     end
 
     def load_connections_from_yaml
+      Tako::Repository.clear
       (config[env] || []).each do |shard_name, conf|
         Tako::Repository.add(shard_name, conf)
       end
