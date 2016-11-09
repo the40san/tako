@@ -5,7 +5,7 @@ Tako provides Database-Sharding features for ActiveRecord.
 Respecting [Octopus](https://github.com/thiagopradi/octopus)
 
 # Motivation
-The main goal of Tako is　implementing sharding features with less ActiveRecord-dependent; catching up Rails version up.
+The main goal of Tako is implementing sharding features with less ActiveRecord-dependent; catching up Rails version up.
 And also, Tako supports migration from Octopus because it is no longer maintained.
 
 
@@ -33,7 +33,7 @@ Or install it yourself as:
 
 ## Usage
 ## How to use Tako?
-First, you need to create a config file, `shards.yml`, inside your config/ directory.
+First, you need to create a [config file](https://github.com/the40san/tako/wiki/Config), `shards.yml`, inside your config/ directory.
 Also you can override config file path with environment variable.
 
 ### Syntax
@@ -105,6 +105,7 @@ end
 ## TODO
 
  * Make more independent　of ActiveRecord implementation.
+ * Use `prepend` instead of alias_method chain when other gem could handle that.
 
 ## Development
 
