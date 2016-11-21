@@ -46,6 +46,11 @@ namespace :db do
             ActiveRecord::SchemaMigration.create!(:version => proxy.version.to_s)
           end
         end
+
+        if defined?(ActiveRecord::InternalMetadata)
+          ActiveRecord::InternalMetadata.create_table
+          ActiveRecord::InternalMetadata[:environment] = ActiveRecord::Migrator.current_environment
+        end
       end
     end
 
