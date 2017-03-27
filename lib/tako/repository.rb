@@ -5,17 +5,17 @@ module Tako
         @proxy_configs ||= {}
       end
 
-      def proxy_connections
-        @proxy_connections ||= {}
+      def proxy_classes
+        @proxy_classes ||= {}
       end
 
       def clear
-        proxy_connections.each do |shard_name, connection|
-          connection.disconnect!
+        proxy_classes.each do |shard_name, proxy_class|
+          proxy_class.connection.disconnect!
           remove_const("TAKO_AR_CLASS_#{shard_name.upcase}")
         end
         proxy_configs.clear
-        proxy_connections.clear
+        proxy_classes.clear
       end
 
       def add(shard_name, conf)
@@ -26,12 +26,12 @@ module Tako
         const_set("TAKO_AR_CLASS_#{shard_name.upcase}", temporary_class)
         temporary_class.establish_connection(conf)
 
-        proxy_connections[shard_name] = temporary_class.connection
+        proxy_classes[shard_name] = temporary_class
         proxy_configs[shard_name] = conf
       end
 
       def create_proxy(shard_name)
-        Proxy.new(shard_name, proxy_connections[shard_name.to_sym])
+        Proxy.new(shard_name, proxy_classes[shard_name.to_sym].connection_without_tako)
       end
 
       def shard_names

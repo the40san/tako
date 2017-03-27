@@ -14,5 +14,6 @@ module Tako
 end
 
 ActiveRecord::ConnectionHandling.class_eval do
+  alias_method :connection_without_tako, :connection
   prepend Tako::ActiveRecordExt::ConnectionHandling
 end
