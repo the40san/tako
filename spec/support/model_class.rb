@@ -75,7 +75,7 @@ end
 class SaveAlias < ActiveRecord::Base
 end
 
-class CreateModelA < ActiveRecord::Migration
+class CreateAllTables < ActiveRecord::Migration
   def change
     create_table :model_as do |t|
       t.integer :value1
@@ -83,127 +83,71 @@ class CreateModelA < ActiveRecord::Migration
 
       t.timestamps null: false
     end
-  end
-end
 
-class CreateModelB < ActiveRecord::Migration
-  def change
     create_table :model_bs do |t|
       t.integer :value3
       t.string  :value4
 
       t.timestamps null: false
     end
-  end
-end
 
-class CreateForceShardRoot < ActiveRecord::Migration
-  def change
     create_table :force_shard_roots do |t|
       t.timestamps null: false
     end
-  end
-end
 
-class CreateForceShardA < ActiveRecord::Migration
-  def change
     create_table :force_shard_as do |t|
       t.belongs_to :force_shard_root
       t.timestamps null: false
     end
-  end
-end
 
-class CreateForceShardB < ActiveRecord::Migration
-  def change
     create_table :force_shard_bs do |t|
       t.belongs_to :force_shard_root
       t.timestamps null: false
     end
-  end
-end
 
-class CreateUser < ActiveRecord::Migration
-  def change
     create_table :users do |t|
       t.timestamps null: false
     end
-  end
-end
 
-class CreateBlog < ActiveRecord::Migration
-  def change
     create_table :blogs do |t|
       t.timestamps null: false
     end
-  end
-end
 
-class CreateWallet < ActiveRecord::Migration
-  def change
     create_table :wallets do |t|
       t.belongs_to :user
       t.timestamps null: false
     end
-  end
-end
 
-class CreateArticle < ActiveRecord::Migration
-  def change
     create_table :articles do |t|
       t.belongs_to :blog
       t.timestamps null: false
     end
-  end
-end
 
-class CreateLog < ActiveRecord::Migration
-  def change
     create_table :logs do |t|
       t.belongs_to :user
       t.integer :number
       t.timestamps null: false
     end
-  end
-end
 
-class CreateAuthor < ActiveRecord::Migration
-  def change
     create_table :authors do |t|
       t.belongs_to :blog
       t.timestamps null: false
     end
-  end
-end
 
-class CreateCharacter < ActiveRecord::Migration
-  def change
     create_table :characters do |t|
       t.timestamps null: false
     end
-  end
-end
 
-class CreateSkill < ActiveRecord::Migration
-  def change
     create_table :skills do |t|
       t.timestamps null: false
     end
-  end
-end
 
-class CreateCharacterSkill < ActiveRecord::Migration
-  def change
     create_table :character_skills do |t|
       t.belongs_to :character
       t.belongs_to :skill
       t.timestamps null: false
     end
-  end
-end
 
-class CreateSaveAliased < ActiveRecord::Migration
-  def change
     create_table :save_aliases do |t|
       t.integer :value1
       t.timestamps null: false

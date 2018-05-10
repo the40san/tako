@@ -11,23 +11,7 @@ Dir[File.join(File.dirname(__FILE__), '../', "spec/active_record/**/*.rb")].each
 
 RSpec.configure do |config|
   config.before(:suite) do
-    migration_classes = [
-      CreateModelA,
-      CreateModelB,
-      CreateForceShardRoot,
-      CreateForceShardA,
-      CreateForceShardB,
-      CreateUser,
-      CreateWallet,
-      CreateLog,
-      CreateBlog,
-      CreateArticle,
-      CreateAuthor,
-      CreateCharacter,
-      CreateSkill,
-      CreateCharacterSkill,
-      CreateSaveAliased
-    ]
+    migration_classes = [CreateAllTables]
 
     Tako.config[:test].values.each do |conf|
       ActiveRecord::Tasks::DatabaseTasks.drop(conf)
