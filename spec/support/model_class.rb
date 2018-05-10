@@ -75,7 +75,7 @@ end
 class SaveAlias < ActiveRecord::Base
 end
 
-class CreateAllTables < ActiveRecord::Migration
+class CreateAllTables < ActiveRecord::VERSION::MAJOR >= 5 ? ActiveRecord::Migration[5.0] : ActiveRecord::Migration
   def change
     create_table :model_as do |t|
       t.integer :value1
