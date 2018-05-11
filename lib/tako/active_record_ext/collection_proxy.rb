@@ -24,7 +24,7 @@ module Tako
         :replace,
         :select,
         :size,
-        :to_a,
+        :load,
         :uniq,
       ] & ActiveRecord::Associations::CollectionProxy.public_instance_methods
 

@@ -22,7 +22,7 @@ module Tako
         :pluck,
         :select,
         :size,
-        :to_a,
+        :load,
         :uniq,
       ] & ActiveRecord::AssociationRelation.public_instance_methods
 

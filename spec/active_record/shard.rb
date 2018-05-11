@@ -291,9 +291,9 @@ describe 'ActiveRecord::Base.shard' do
 
       expect(User.shard(:shard01).first).to eq(user)
 
-      Log.shard(:shard01).create(number: 1, user: user)
-      Log.shard(:shard01).create(number: 2, user: user)
-      Log.shard(:shard01).create(number: 3, user: user)
+      lod1 = Log.shard(:shard01).create(number: 1, user: user)
+      log2 = Log.shard(:shard01).create(number: 2, user: user)
+      log3 = Log.shard(:shard01).create(number: 3, user: user)
 
       expect(Log.shard(:shard01).count).to eq(3)
       expect(Log.shard(:shard01).sum(:number)).to eq(6)
@@ -301,6 +301,7 @@ describe 'ActiveRecord::Base.shard' do
       expect(Log.shard(:shard01).minimum(:number)).to eq(1)
       expect(Log.shard(:shard01).maximum(:number)).to eq(3)
       expect(Log.shard(:shard01).exists?).to eq(true)
+      expect(Log.shard(:shard01).find_by(number: 2)).to eq(log2)
 
       expect(Log.shard(:shard01).number_gteq(2).count).to eq(2)
       expect(Log.shard(:shard01).number_gteq(2).reload.count).to eq(2)
@@ -309,6 +310,7 @@ describe 'ActiveRecord::Base.shard' do
       expect(Log.shard(:shard01).number_gteq(2).minimum(:number)).to eq(2)
       expect(Log.shard(:shard01).number_gteq(2).maximum(:number)).to eq(3)
       expect(Log.shard(:shard01).number_gteq(2).exists?).to eq(true)
+      expect(Log.shard(:shard01).number_gteq(2).find_by(number: 2)).to eq(log2)
 
       expect(user.logs.count).to eq(3)
       expect(user.logs.sum(:number)).to eq(6)
@@ -316,6 +318,7 @@ describe 'ActiveRecord::Base.shard' do
       expect(user.logs.minimum(:number)).to eq(1)
       expect(user.logs.maximum(:number)).to eq(3)
       expect(user.logs.exists?).to eq(true)
+      expect(user.logs.find_by(number: 2)).to eq(log2)
 
       expect(user.logs.number_gteq(2).count).to eq(2)
       expect(user.logs.number_gteq(2).sum(:number)).to eq(5)
@@ -323,6 +326,7 @@ describe 'ActiveRecord::Base.shard' do
       expect(user.logs.number_gteq(2).minimum(:number)).to eq(2)
       expect(user.logs.number_gteq(2).maximum(:number)).to eq(3)
       expect(user.logs.number_gteq(2).exists?).to eq(true)
+      expect(user.logs.number_gteq(2).find_by(number: 2)).to eq(log2)
     end
   end
 
