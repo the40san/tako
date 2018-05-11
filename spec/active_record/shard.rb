@@ -296,9 +296,29 @@ describe 'ActiveRecord::Base.shard' do
       Log.shard(:shard01).create(number: 3, user: user)
 
       expect(Log.shard(:shard01).count).to eq(3)
+      expect(Log.shard(:shard01).sum(:number)).to eq(6)
+      expect(Log.shard(:shard01).average(:number)).to eq(2)
+      expect(Log.shard(:shard01).minimum(:number)).to eq(1)
+      expect(Log.shard(:shard01).maximum(:number)).to eq(3)
+
+      expect(Log.shard(:shard01).number_gteq(2).count).to eq(2)
       expect(Log.shard(:shard01).number_gteq(2).reload.count).to eq(2)
+      expect(Log.shard(:shard01).number_gteq(2).sum(:number)).to eq(5)
+      expect(Log.shard(:shard01).number_gteq(2).average(:number)).to eq(2.5)
+      expect(Log.shard(:shard01).number_gteq(2).minimum(:number)).to eq(2)
+      expect(Log.shard(:shard01).number_gteq(2).maximum(:number)).to eq(3)
+
       expect(user.logs.count).to eq(3)
-      expect(user.logs.number_gteq(3).count).to eq(1)
+      expect(user.logs.sum(:number)).to eq(6)
+      expect(user.logs.average(:number)).to eq(2)
+      expect(user.logs.minimum(:number)).to eq(1)
+      expect(user.logs.maximum(:number)).to eq(3)
+
+      expect(user.logs.number_gteq(2).count).to eq(2)
+      expect(user.logs.number_gteq(2).sum(:number)).to eq(5)
+      expect(user.logs.number_gteq(2).average(:number)).to eq(2.5)
+      expect(user.logs.number_gteq(2).minimum(:number)).to eq(2)
+      expect(user.logs.number_gteq(2).maximum(:number)).to eq(3)
     end
   end
 

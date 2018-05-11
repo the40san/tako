@@ -4,7 +4,7 @@ module Tako
       SHARDED_METHODS = [
         :any?,
         :build,
-        :count,
+        :calculate,
         :create,
         :create!,
         :concat,
@@ -23,7 +23,6 @@ module Tako
         :replace,
         :select,
         :size,
-        :sum,
         :to_a,
         :uniq,
       ] & ActiveRecord::Associations::CollectionProxy.public_instance_methods
