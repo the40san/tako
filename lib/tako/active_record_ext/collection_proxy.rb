@@ -13,6 +13,7 @@ module Tako
         :destroy,
         :destroy_all,
         :empty?,
+        :exists?,
         :find,
         :first,
         :include?,
