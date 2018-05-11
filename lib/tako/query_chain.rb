@@ -8,12 +8,10 @@ module Tako
       @base_object = base_object
     end
 
-    def method_missing(method, *args)
+    def method_missing(method, *args, &block)
       @proxy.with_shard do
         result = if block_given?
-                    base_object.send(method, *args) do
-                      yield
-                    end
+                    base_object.send(method, *args, &block)
                   else
                     base_object.send(method, *args)
                   end

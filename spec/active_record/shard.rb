@@ -329,4 +329,13 @@ describe 'ActiveRecord::Base.shard' do
       end
     end
   end
+
+  describe "query chain method with block args" do
+    it "works" do
+      record = ModelA.shard(:shard01).find_or_initialize_by(id: 1) do |a|
+        a.value1 = 1
+      end
+      expect(record.value1).to eq(1)
+    end
+  end
 end
