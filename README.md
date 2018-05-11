@@ -1,5 +1,5 @@
 # Tako
-[![CircleCI](https://circleci.com/gh/the40san/tako/tree/master.svg?style=svg)](https://circleci.com/gh/the40san/tako/tree/master)
+[![Build Status](https://travis-ci.org/the40san/tako.svg?branch=master)](https://travis-ci.org/the40san/tako)
 
 Tako provides Database-Sharding features for ActiveRecord.
 Respecting [Octopus](https://github.com/thiagopradi/octopus)
