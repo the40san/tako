@@ -2,7 +2,16 @@ module Tako
   class Config
     class << self
       def shards_yml
-        YAML.load(ERB.new(File.read(yml_path)).result).with_indifferent_access
+        yml = YAML.load(ERB.new(File.read(yml_path)).result).with_indifferent_access
+
+        (yml[:tako] || {}).each do |env, shard|
+          shard.each do |name, conf|
+            url = conf.delete("url")
+            conf.merge!(extract_url_to_hash(url)) if url
+          end
+        end
+
+        yml
       end
 
       def env
@@ -17,6 +26,10 @@ module Tako
 
       def directory
         defined?(::Rails.root) ? Rails.root.to_s : Dir.pwd
+      end
+
+      def extract_url_to_hash(url)
+        ActiveRecord::ConnectionAdapters::ConnectionSpecification::ConnectionUrlResolver.new(url).to_hash
       end
     end
   end

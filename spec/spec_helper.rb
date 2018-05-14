@@ -28,6 +28,10 @@ RSpec.configure do |config|
       ActiveRecord::Migration.run(*migration_classes)
     end
 
+    Tako.shard(:shard03) do
+      ActiveRecord::Migration.run(*migration_classes)
+    end
+
     database_yml_path = File.join(File.dirname(__FILE__), "config/database.yml")
     database_yml = YAML.load(ERB.new(File.read(database_yml_path)).result).with_indifferent_access[:test]
     ActiveRecord::Tasks::DatabaseTasks.drop(database_yml)
@@ -57,6 +61,7 @@ RSpec.configure do |config|
       klass.delete_all
       klass.shard(:shard01).delete_all
       klass.shard(:shard02).delete_all
+      klass.shard(:shard03).delete_all
     end
   end
 
@@ -81,6 +86,7 @@ RSpec.configure do |config|
       klass.delete_all
       klass.shard(:shard01).delete_all
       klass.shard(:shard02).delete_all
+      klass.shard(:shard03).delete_all
     end
   end
 end

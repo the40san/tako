@@ -61,6 +61,18 @@ describe Tako do
               host:     ENV['MYSQL_HOST'] || "localhost",
               port:     ENV['MYSQL_PORT'] || 3306,
               database: "tako_test_shard2"
+            },
+            shard03: {
+              adapter: "mysql2",
+              encoding: "utf8",
+              charset: "utf8",
+              collation: "utf8_unicode_ci",
+              reconnect: false,
+              username: ENV['MYSQL_USER_NAME'] || "root",
+              password: ENV['MYSQL_ROOT_PASSWORD'],
+              host:     ENV['MYSQL_HOST'] || "localhost",
+              port:     ENV['MYSQL_PORT'] || 3306,
+              database: "tako_test_shard3"
             }
           }
         }.with_indifferent_access
@@ -76,7 +88,8 @@ describe Tako do
       expect(subject).to eq(
         [
           :shard01,
-          :shard02
+          :shard02,
+          :shard03
         ]
       )
     end

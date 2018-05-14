@@ -17,3 +17,6 @@ tako:
     shard02:
       <<: *default
       database: tako_test_shard2
+    shard03:
+      <<: *default
+      url: mysql2://<%= ENV['MYSQL_USER_NAME'] || "root" %>:<%= ENV['MYSQL_ROOT_PASSWORD'] %>@<%= ENV['MYSQL_HOST'] || "localhost" %>:<%= ENV['MYSQL_PORT'] || 3306 %>/tako_test_shard3
