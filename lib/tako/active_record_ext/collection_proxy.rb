@@ -14,17 +14,14 @@ module Tako
         :destroy_all,
         :empty?,
         :exists?,
-        :find,
-        :first,
         :include?,
-        :last,
         :length,
         :many?,
         :pluck,
         :replace,
         :select,
         :size,
-        :to_a,
+        :load,
         :uniq,
       ] & ActiveRecord::Associations::CollectionProxy.public_instance_methods
 

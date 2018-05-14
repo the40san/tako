@@ -13,16 +13,13 @@ module Tako
         :destroy_all,
         :empty?,
         :exists?,
-        :find,
-        :first,
         :include?,
-        :last,
         :length,
         :many?,
         :pluck,
         :select,
         :size,
-        :to_a,
+        :load,
         :uniq,
       ] & ActiveRecord::AssociationRelation.public_instance_methods
 
