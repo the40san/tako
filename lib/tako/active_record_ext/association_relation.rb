@@ -4,7 +4,7 @@ module Tako
       SHARDED_METHODS = [
         :any?,
         :build,
-        :count,
+        :calculate,
         :create,
         :create!,
         :delete,
@@ -12,6 +12,7 @@ module Tako
         :destroy,
         :destroy_all,
         :empty?,
+        :exists?,
         :find,
         :first,
         :include?,
@@ -21,7 +22,6 @@ module Tako
         :pluck,
         :select,
         :size,
-        :sum,
         :to_a,
         :uniq,
       ] & ActiveRecord::AssociationRelation.public_instance_methods
