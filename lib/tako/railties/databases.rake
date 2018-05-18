@@ -31,11 +31,12 @@ namespace :db do
         version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
         revert = !!ENV["DOWN_MIGRATION"]
 
-        migrations = if version
-          ActiveRecord::Migrator.migrations(paths).select {|proxy| proxy.version == version }
+        migrations = if defined?(ActiveRecord::MigrationContext)
+          ActiveRecord::MigrationContext.new(paths).migrations
         else
           ActiveRecord::Migrator.migrations(paths)
         end
+        migrations.select! {|proxy| proxy.version == version } if version
         all_schema_migration_versions = ActiveRecord::SchemaMigration.pluck(:version)
         migrations = migrations.reject {|proxy| all_schema_migration_versions.include?(proxy.version.to_s) }
         migrations.each do |proxy|
@@ -49,7 +50,11 @@ namespace :db do
 
         if defined?(ActiveRecord::InternalMetadata)
           ActiveRecord::InternalMetadata.create_table
-          ActiveRecord::InternalMetadata[:environment] = ActiveRecord::Migrator.current_environment
+          ActiveRecord::InternalMetadata[:environment] = if defined?(ActiveRecord::MigrationContext)
+            ActiveRecord::MigrationContext.new(paths).current_environment
+          else
+            ActiveRecord::Migrator.current_environment
+          end
         end
       end
     end
