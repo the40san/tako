@@ -1,10 +1,10 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
+ENV["RAILS_ENV"] ||= 'test'
+require_relative 'fake_app'
+
 require 'tako'
 require 'pry'
-
-ENV["RAILS_ENV"] ||= 'test'
-ENV['TAKO_CONFIG_FILE_PATH'] ||= "spec/config/shards.yml"
 
 Dir[File.join(File.dirname(__FILE__), '../', "spec/support/**/*.rb")].each { |f| require f }
 Dir[File.join(File.dirname(__FILE__), '../', "spec/active_record/**/*.rb")].each { |f| require f }
